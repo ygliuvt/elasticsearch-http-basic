@@ -41,7 +41,7 @@ public class HttpBasicServer extends HttpServer {
 
     private boolean shouldLetPass(final HttpRequest request) {
         return ((request.method() == RestRequest.Method.GET) && request.path().equals("/"))
-            || (request.header("Host").startsWith("localhost:") || request.header("Host").startsWith("127.0.0.1:"));
+            || (request.header("Host") != null && (request.header("Host").startsWith("localhost:") || request.header("Host").startsWith("127.0.0.1:")));
     }
     
     private boolean authBasic(final HttpRequest request){
