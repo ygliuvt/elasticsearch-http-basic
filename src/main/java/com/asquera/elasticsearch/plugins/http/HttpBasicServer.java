@@ -32,7 +32,7 @@ public class HttpBasicServer extends HttpServer {
     }
     
     public void internalDispatchRequest(final HttpRequest request, final HttpChannel channel) {
-        if (shouldLetPass(request) || authBasic(request)) {
+        if ( ( shouldLetPass(request) || authBasic(request) ) && isNotARestrictedRequest(request)) {
             super.internalDispatchRequest(request, channel);
         } else {
             channel.sendResponse(new StringRestResponse(UNAUTHORIZED));
@@ -42,6 +42,18 @@ public class HttpBasicServer extends HttpServer {
     private boolean shouldLetPass(final HttpRequest request) {
         return ((request.method() == RestRequest.Method.GET) && request.path().equals("/"))
             || (request.header("Host") != null && (request.header("Host").startsWith("localhost:") || request.header("Host").startsWith("127.0.0.1:")));
+    }
+
+    private boolean isNotARestrictedRequest(final HttpRequest request)
+    {
+       if(request.method() == RestRequest.Method.DELETE)
+       {
+          return (request.header("Confirm-Delete-Action") != null) ? request.header("Confirm-Delete-Action").equals("true") : false ;
+       }
+       else
+       {
+           return true;
+       }  
     }
     
     private boolean authBasic(final HttpRequest request){
